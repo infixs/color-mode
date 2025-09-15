@@ -1,7 +1,7 @@
 import { reactive, ref } from 'vue'
 
 import type { ColorModeInstance } from './types'
-import { defineNuxtPlugin, isVue2, isVue3, useHead, useState, useRouter, useRequestHeaders } from '#imports'
+import { defineNuxtPlugin, isVue2, isVue3, useHead, useState, useRouter, useRequestHeaders, useCookie } from '#imports'
 import { preference, hid, script, dataValue, storage, storageKey } from '#color-mode-options'
 
 const addScript = (head) => {
@@ -47,10 +47,9 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   if (isVue3) {
     if (storage === 'cookie') {
-      const { cookie } = useRequestHeaders(['cookie'])
-      const [, value] = cookie?.split('; ').map(s => s.split('=')).find(([k]) => k === storageKey) ?? []
-      if (value) {
-        colorMode.preference = value
+      const cookie = useCookie(storageKey, { path: '/' })
+      if (cookie.value) {
+        colorMode.preference = cookie.value
       }
     }
     useHead({ htmlAttrs })
